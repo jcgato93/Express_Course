@@ -1,5 +1,5 @@
 {
-  "name": "Examples",
+  "name": "ecommerce",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,9 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "pug": "^2.0.3"
   },
   "devDependencies": {
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.18.6"
   }
 }

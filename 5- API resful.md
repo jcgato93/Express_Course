@@ -74,3 +74,34 @@ router.put('/:productId',function(req,res){
 
 module.exports = router;
 ```
+
+- luego en el index.js importamos la configuracion de rutas de products
+
+```javascript
+const express = require("express");
+const path = require("path");
+const bodyParser = require('body-parser');
+const productsRouter = require('./routes/views/products');
+const productsApiRouter = require('./routes/api/products');
+
+// app
+const app = express();
+
+// middlewares
+app.use(bodyParser.json());
+
+
+// routes
+app.use("/products", productsRouter);
+app.use("/api/products", productsApiRouter);
+
+// redirect
+app.get('/', function(req, res) {
+  res.redirect('/products');
+});
+
+// server
+const server = app.listen(8000, function() {
+  console.log(`Listening http://localhost:${server.address().port}`);
+});
+```
