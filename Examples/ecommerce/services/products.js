@@ -1,12 +1,20 @@
 const productsMocks = require('../utils/mocks/products');
+const MongoLib = require('../lib/mongo');
+
 
 class ProductsService {
     constructor() {
-
+        this.collection = 'products';
+        this.mongoDB = new MongoLib();
     }
 
-    getProducts({ tags }) {
-        return Promise.resolve(productsMocks);
+    async getProducts({ tags }) {
+        // verificar si existen los tags y armar la consulta
+        const query = tags && { tags : { $in:tags } };
+        const produts = await this.mongoDB.getAll(this.collection, query);
+
+        // si no retorna ningun producto la consulta entonces devuelve un array vacio
+        return produts || [];
     }
 
     getProduct({ productId }) {
