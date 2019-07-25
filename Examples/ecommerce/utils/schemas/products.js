@@ -2,7 +2,7 @@ const   Joi = require('joi');
 
 
 const productIdSchema = Joi.string().regex(/^[0-9a-fA-f]{24}$/);
-const productTagSchema = Joi.array().items(Joi.strict().max(10));
+const productTagSchema = Joi.array().items(Joi.string().max(10));
 
 
 const createProductSchema = {

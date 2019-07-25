@@ -5,9 +5,13 @@ const productsRouter = require('./routes/views/products');
 const productsApiRouter = require('./routes/api/products');
 const{
 logErrors,
+wrapErrors,
 clientErrorHandler,
 errorHandler
 } = require('./utils/middlewares/errorsHandlers');
+
+const isRequestAJAXOrApi = require('./utils/isRequestAJAXOrApi')
+const boom = require('boom');
 
 // app
 const app = express();
@@ -32,8 +36,22 @@ app.get('/', function(req, res) {
   res.redirect('/products');
 });
 
+// Not found response
+app.use(function(req,res,next){
+  if(isRequestAJAXOrApi(req)){
+    const {
+      output : {statusCode,  payload}
+    } = boom.notFound();
+
+    res.status(statusCode).json(payload)
+  }
+
+  res.status(404).render("404");
+})
+
 // error handlers
 app.use(logErrors);
+app.use(wrapErrors);
 app.use(clientErrorHandler);
 app.use(errorHandler);
 
