@@ -102,6 +102,103 @@ este creara el usuario admin de si este no existe en la base de datos
 
 ## Autenticacion de usuarios
 
-- Crear en la carpeta utils una carpeta llamada auth
+- Crear en la siguiente estructura de carpetas  utils/auth/strategies/basic.js
 
+```javascript
+const passport = require('passport');
+const { BasicStrategy } = require('passport-http');
+const boom = require('boom');
+const bcrypt = require('bcrypt');
+const MongoLib= require('../../../lib/mongo');
+
+passport.use(
+    new BasicStrategy(async function(username,password, cb){
+        const mongoDB = MongoLib();
+
+        try {
+            // Retorna de la base de datos el usuario con ese mismo username
+            const [user] = await mongoDB.getAll("users", { username });
+
+            // Si no retorna ningun usuario de la consulta 
+            if(!user){
+                return cb(boom.unauthorized(), false);
+            }
+
+            // Si el password no concuerda con el que retorna la base de datos
+            if(!await bcrypt.compare(passport, user.password)){
+                return cb(boom.unauthorized(),false);
+            }
+
+            // Si el usuario y el password concuerdan retorna el usuario
+            return cb(null,user);
+
+        } catch (error) {
+            return cb(error)
+        }
+    })
+)
+```
+
+
+- Crear end-point que rotorne un web token
+
+En la carpeta routes/api crearemos un nuevo archivo con el nombre auth.js
+
+```javascript
+const express = require('express');
+const passport = require('passport');
+const boom = require('boom');
+const jwt = require('jsonwebtoken');
+const api = express.Router();
+const { config } = require('../../config/index');
+
+// Basic strategy
+require('../../utils/auth/strategies/basic');
+
+
+api.post("/token",async function(req, res, next){
+    passport.authenticate("basic",function(error,user){
+        try {
+            if(error || !user){
+                next(boom.unauthorized());
+            }
+
+            req.login(user, { session: false }, async function(error){
+                if(error){
+                    next(error);
+                }
+
+                const payload = { sub: user.username, email: user.email };
+
+                const token = jwt.sign(payload, config.authJwtSecret, {
+                    expiresIn: "15m"
+                });
+
+                return res.status(200).json({ access_token: token })
+            })
+        } catch (error) {
+            next(error);
+        }
+    })(req,res,next);
+})
+
+module.exports = api;
+```
+
+- Añadir la ruta al index.js
+```javascript
+const authApiRouter  = require('./routes/api/auth');
+
+// routes
+ //...
+app.use("/api/auth", authApiRouter);
+```
+
+- Por ultimo para verificar que todo functiona correctamente corremos el servidor 
+y luego con una herramienta como postman hacer una peticion con un header de authorization basic
+donde colocaremos el username y el password apuntando a la siguiente url:
+
+        {{url}}/api/auth/token
+
+este debe de retornar un json con el "access_token"        
 
