@@ -6,7 +6,7 @@
 
     - supertest : levanta un servidor para simular las peticiones
     - mocha : para correr los asserts de los test        
-    - sinon : para hacer stacks y mocks
+    - sinon : para hacer stub y mocks
     - proxyquire : permite modificar peticiones para colocar los mocks
 
 - Crear el script para correr los test en el package.json
