@@ -5,6 +5,8 @@ servicios debemos utilizar mocks de la base de datos
 
 - Primero vamos a crear el siguiente archivo utils/mocks/mongoLib.js
 
+mas informacion sobre la libreria sinon : https://sinonjs.org/releases/latest/stubs/
+
 ```javascript
 const { productsMock, filteredProductsMock } = require("./products");
 const sinon = require("sinon");
