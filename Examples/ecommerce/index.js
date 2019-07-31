@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const productsRouter = require('./routes/views/products');
 const productsApiRouter = require('./routes/api/products');
 const authApiRouter  = require('./routes/api/auth');
+const helmet = require('helmet');
 
 const{
 logErrors,
@@ -19,6 +20,7 @@ const boom = require('boom');
 const app = express();
 
 // middlewares
+app.use(helmet());
 app.use(bodyParser.json());
 
 // static files

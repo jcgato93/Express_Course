@@ -9,6 +9,9 @@ productTagSchema,
 updateProductSchema } = require('../../utils/schemas/products');
 const validation = require('../../utils/middlewares/validationHandler');
 
+const cacheResponse = require('../../utils/cacheResponse');
+const { FIVE_MINUTES_IN_SECONDS, SIXTY_MINUTES_IN_SECONDS } = require('../../utils/time');
+
 // JWT strategies
 require('../../utils/auth/strategies/jwt');
 
@@ -18,6 +21,8 @@ app.use("api/products",router);
 const productService = new ProductsService();
 
 router.get("/", async function(req, res, next) {
+  cacheResponse(res, FIVE_MINUTES_IN_SECONDS)
+
   const { tags } = req.query;
 
   console.log("req", req.query);
@@ -35,6 +40,7 @@ router.get("/", async function(req, res, next) {
 });
 
 router.get("/:productId", async function(req, res, next) {
+  cacheResponse(res, SIXTY_MINUTES_IN_SECONDS)
   const { productId } = req.params;
 
   console.log("req", req.params);
